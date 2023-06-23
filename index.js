@@ -1,94 +1,60 @@
-// TODO: Include packages needed for this application
 const inquirer = require('inquirer');
 const fs = require('fs');
-// TODO: Create an array of questions for user input
+const shapes = require('./lib/shapes')
+
 const questions = [
     {
         type: 'input',
-        name: 'title',
-        message: 'What is title of your project?',
-    }, 
-    {
-        type: 'input',
-        name: 'description',
-        message: 'Describe your project?',
+        name: 'characters',
+        message: 'What characters would you like on your logo?',
+        suffix: ' (Maximum 3)',
+        validate: function validate(response) {
+            const done = this.async();
+            if (response.length > 3) {
+              done('Maximum 3 characters');
+            } else if (response.length === 0) {
+                done('Must have some characters');
+            } else{
+                done(null, true);
+            }
+        }
     },
     {
         type: 'input',
-        name: 'installation',
-        message: 'How would someone install your project?',
-    },
-    {
-        type: 'input',
-        name: 'use',
-        message: 'How does someone use your project?',
+        name: 'textColor',
+        message: 'What color would you like your text to be?',
+        suffix: ' (Keyword or hexadecimal)',
     },
     {
         type: 'list',
-        name: 'license',
-        message: 'What license did you use for your project?',
-        choices: ['MIT', 'GPLv2', 'Apache', 'Other']
+        name: 'shape',
+        message: 'What shape would you like your logo to be?',
+        choices: ['square', 'triangle', 'square',],
     },
     {
         type: 'input',
-        name: 'contribute',
-        message: 'Who contributed to your project?',
-    },
-    {
-        type: 'input',
-        name: 'test',
-        message: 'How would someone test your project?',
-    },
-    {
-        type: 'input',
-        name: 'github',
-        message: 'What is your GitHub username?',
-    },
-    {
-        type: 'input',
-        name: 'email',
-        message: 'What is your email?',
+        name: 'shapeColor',
+        message: 'What color would you like your shape to be?',
+        suffix: ' (Keyword or hexadecimal)',
     },
 ];
 
 inquirer.prompt(questions)
 .then((data) => {
-    const fileName = "created-readme.md";
+    const fileName = "logo.svg";
     const fileContent = 
-    `![Static Badge](https://img.shields.io/badge/License-${data.license}-brightgreen) ![Static Badge](https://img.shields.io/badge/GitHub-${data.github}-blue)
+<svg version="1.1"
+     width="300" height="200"
+     xmlns="http://www.w3.org/2000/svg">
 
-# ${data.title}
+  <circle cx="150" cy="100" r="80" fill="green" />
 
-## Table of Contents
-- [Description](#description)
-- [Installation](#installation)
-- [Usage](#usage)
-- [License](#license)
-- [Contributing](#contributing)
-- [Tests](#tests)
-- [Questions](#questions)
+  <text x="150" y="125" font-size="60" text-anchor="middle" fill="white">SVG</text>
 
-## Description
-    ${data.description}
-
-## Installation
-    ${data.installation}
+</svg>
     
-## Usage
-    ${data.use}
     
-## License
-    ${data.license}
     
-## Contributing
-    ${data.contribute}
-
-## Tests
-    ${data.test}
-    
-## Questions
-    If you have any questions please feel free to reach out to me via email at: ${data.email} or my Github at: github.com/${data.github}`
-
     fs.writeFile(fileName, fileContent, (err) =>
         err ? console.log(err) : console.log('Success!')
     );

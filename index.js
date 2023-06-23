@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-const shapes = require('./lib/shapes')
+const shapes = require('./lib/shapes.js');
+
 
 const questions = [
     {
@@ -24,6 +25,15 @@ const questions = [
         name: 'textColor',
         message: 'What color would you like your text to be?',
         suffix: ' (Keyword or hexadecimal)',
+        // validate: function isColor(response){
+        //     const done = this.async();
+        //     var s = new Option().style;
+        //     s.color = response;
+        //     if ((s.color == response) === false) {
+        //       done('Not a valid color');
+        //     } else{
+        //         done(null, true);
+        //     }}
     },
     {
         type: 'list',
@@ -39,23 +49,30 @@ const questions = [
     },
 ];
 
-inquirer.prompt(questions)
-.then((data) => {
-    const fileName = "logo.svg";
-    const fileContent = 
-<svg version="1.1"
-     width="300" height="200"
-     xmlns="http://www.w3.org/2000/svg">
-
-  <circle cx="150" cy="100" r="80" fill="green" />
-
-  <text x="150" y="125" font-size="60" text-anchor="middle" fill="white">SVG</text>
-
-</svg>
-    
-    
-    
-    fs.writeFile(fileName, fileContent, (err) =>
-        err ? console.log(err) : console.log('Success!')
-    );
-});
+inquirer.prompt(questions).then((data) => {
+    const fileName = 'logo.svg';
+    const shapeType = data.shape;
+    const shapeColor = data.shapeColor;
+  
+    let shape;
+  
+    if (shapeType === 'Triangle') {
+      shape = new shapes.Triangle(shapeColor);
+    } else if (shapeType === 'Square') {
+      shape = new shapes.Square(shapeColor);
+    } else if (shapeType === 'Circle') {
+      shape = new shapes.Circle(shapeColor);
+    }
+  
+    if (shape) {
+      const fileContent = shape.render();
+  
+      fs.writeFile(fileName, fileContent, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Success!');
+        }
+      });
+    }
+  });

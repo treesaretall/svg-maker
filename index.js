@@ -29,7 +29,7 @@ const questions = [
         type: 'list',
         name: 'shape',
         message: 'What shape would you like your logo to be?',
-        choices: ['square', 'triangle', 'square',],
+        choices: ['Square', 'Triangle', 'Circle',],
     },
     {
         type: 'input',

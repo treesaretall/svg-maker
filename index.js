@@ -1,6 +1,8 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
 const shapes = require('./lib/shapes.js');
+const text = require('./lib/text.js')
+const validateColor = require("validate-color").default;
 
 
 const questions = [
@@ -25,15 +27,13 @@ const questions = [
         name: 'textColor',
         message: 'What color would you like your text to be?',
         suffix: ' (Keyword or hexadecimal)',
-        // validate: function isColor(response){
-        //     const done = this.async();
-        //     var s = new Option().style;
-        //     s.color = response;
-        //     if ((s.color == response) === false) {
-        //       done('Not a valid color');
-        //     } else{
-        //         done(null, true);
-        //     }}
+        validate: function(response) {
+          const colorCheck = response && validateColor(response) ? true: false;
+          if (!colorCheck) {
+            return "Not a valid color";
+          }
+          return true;
+        }
     },
     {
         type: 'list',
@@ -46,13 +46,21 @@ const questions = [
         name: 'shapeColor',
         message: 'What color would you like your shape to be?',
         suffix: ' (Keyword or hexadecimal)',
+        validate: function(response) {
+          const colorCheck = response && validateColor(response) ? true: false;
+          if (!colorCheck) {
+            return "Not a valid color";
+          }
+          return true;
+        }
     },
-];
-
+]
 inquirer.prompt(questions).then((data) => {
     const fileName = 'logo.svg';
     const shapeType = data.shape;
     const shapeColor = data.shapeColor;
+    const characters = data.characters.toUpperCase()
+    const textColor = data.textColor
   
     let shape;
   
@@ -63,15 +71,19 @@ inquirer.prompt(questions).then((data) => {
     } else if (shapeType === 'Circle') {
       shape = new shapes.Circle(shapeColor);
     }
+
+    let textConst = new text.Text(characters,textColor)
   
     if (shape) {
-      const fileContent = shape.render();
+      const shapeOutput = shape.render();
+      const textOutput = textConst.render()
+      const fileContent = `<svg version="1.1" width="300" height="200" xmlns="http://www.w3.org/2000/svg">${shapeOutput}${textOutput}</svg>`;
   
       fs.writeFile(fileName, fileContent, (err) => {
         if (err) {
           console.log(err);
         } else {
-          console.log('Success!');
+          console.log('Generated logo.svg');
         }
       });
     }
